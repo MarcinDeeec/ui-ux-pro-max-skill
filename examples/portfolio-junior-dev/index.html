@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alex Carter — Junior Frontend Developer</title>
+  <meta name="description" content="Portfolio of Alex Carter, a junior frontend developer building accessible, performant interfaces with React, TypeScript and Tailwind CSS." />
+  <meta name="theme-color" content="#0A0A0A" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+            sans: ['IBM Plex Sans', 'ui-sans-serif', 'system-ui'],
+          },
+          colors: {
+            ink: {
+              900: '#0A0A0A',
+              800: '#101012',
+              700: '#18181B',
+              600: '#27272A',
+              500: '#3F3F46',
+              400: '#52525B',
+              300: '#A1A1AA',
+              200: '#D4D4D8',
+              100: '#FAFAFA',
+            },
+            brand: { DEFAULT: '#2563EB', hover: '#1D4ED8', soft: '#1E3A8A' },
+          },
+          boxShadow: {
+            glow: '0 0 0 1px rgba(37,99,235,0.35), 0 10px 40px -10px rgba(37,99,235,0.45)',
+          },
+        }
+      }
+    }
+  </script>
+
+
+  <style>
+    html { color-scheme: dark; }
+    body { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+    /* Subtle grid background */
+    .bg-grid {
+      background-image:
+        linear-gradient(rgba(63,63,70,0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(63,63,70,0.18) 1px, transparent 1px);
+      background-size: 48px 48px;
+      background-position: -1px -1px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+    }
+
+    /* Reveal-on-scroll */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease-out, transform .6s ease-out; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* Focus ring (keyboard) */
+    :focus-visible { outline: 2px solid #2563EB; outline-offset: 3px; border-radius: 6px; }
+
+    /* Caret blink for hero */
+    .caret { display:inline-block; width:.6ch; background:#2563EB; margin-left:2px; animation: blink 1.05s steps(2,end) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+      .caret { animation: none !important; }
+      * { animation: none !important; transition: none !important; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body class="bg-ink-900 text-ink-200 antialiased selection:bg-brand/30 selection:text-white">
+
+  <!-- Skip link -->
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-ink-700 focus:text-ink-100 focus:px-3 focus:py-2 focus:rounded-md">Skip to content</a>
+
+
+  <!-- ============== NAV ============== -->
+  <header class="fixed inset-x-0 top-4 z-40 px-4">
+    <nav aria-label="Primary" class="mx-auto max-w-6xl rounded-2xl border border-ink-600/70 bg-ink-800/70 backdrop-blur-md">
+      <div class="flex items-center justify-between px-4 sm:px-5 py-3">
+        <a href="#top" class="flex items-center gap-2 cursor-pointer">
+          <span class="grid h-8 w-8 place-items-center rounded-lg bg-brand text-ink-100 font-mono font-bold">AC</span>
+          <span class="font-mono text-sm text-ink-200"><span class="text-brand">~/</span>alex-carter</span>
+        </a>
+        <ul class="hidden md:flex items-center gap-1 text-sm">
+          <li><a href="#projects" class="px-3 py-2 rounded-md text-ink-300 hover:text-ink-100 hover:bg-ink-700 transition-colors duration-200 cursor-pointer">Projects</a></li>
+          <li><a href="#about"    class="px-3 py-2 rounded-md text-ink-300 hover:text-ink-100 hover:bg-ink-700 transition-colors duration-200 cursor-pointer">About</a></li>
+          <li><a href="#skills"   class="px-3 py-2 rounded-md text-ink-300 hover:text-ink-100 hover:bg-ink-700 transition-colors duration-200 cursor-pointer">Skills</a></li>
+          <li><a href="#contact"  class="px-3 py-2 rounded-md text-ink-300 hover:text-ink-100 hover:bg-ink-700 transition-colors duration-200 cursor-pointer">Contact</a></li>
+        </ul>
+        <a href="#contact" class="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-hover transition-colors duration-200 cursor-pointer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Hire me
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- ============== HERO ============== -->
+    <section id="top" class="relative overflow-hidden pt-40 pb-24 sm:pt-48 sm:pb-32">
+      <div class="absolute inset-0 bg-grid pointer-events-none" aria-hidden="true"></div>
+      <div class="absolute inset-x-0 -top-20 h-[480px] bg-[radial-gradient(60%_60%_at_50%_0%,rgba(37,99,235,0.18),transparent_70%)] pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto max-w-6xl px-4">
+        <div class="reveal">
+          <span class="inline-flex items-center gap-2 rounded-full border border-ink-600 bg-ink-800/60 px-3 py-1 font-mono text-xs text-ink-300">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+            Available for junior roles &middot; remote / EU
+          </span>
+        </div>
+        <h1 class="reveal mt-6 max-w-4xl text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight text-ink-100">
+          Hi, I&rsquo;m <span class="text-brand">Alex Carter</span>.<br class="hidden sm:block" />
+          A junior frontend dev who ships <span class="font-mono text-ink-100">accessible</span>, <span class="font-mono text-ink-100">performant</span> UIs.
+        </h1>
+        <p class="reveal mt-6 max-w-2xl text-lg text-ink-300">
+          I build interfaces with React, TypeScript and Tailwind CSS. Focused on clean DOM, semantic HTML, and Lighthouse scores I&rsquo;m not afraid to show.
+        </p>
+        <div class="reveal mt-8 flex flex-wrap items-center gap-3">
+          <a href="#projects" class="inline-flex items-center gap-2 rounded-lg bg-brand px-5 py-3 text-sm font-medium text-white hover:bg-brand-hover transition-colors duration-200 cursor-pointer shadow-glow">
+            View projects
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="#contact" class="inline-flex items-center gap-2 rounded-lg border border-ink-600 bg-ink-800/60 px-5 py-3 text-sm font-medium text-ink-100 hover:bg-ink-700 transition-colors duration-200 cursor-pointer">
+            Get in touch
+          </a>
+          <a href="#" class="inline-flex items-center gap-2 px-3 py-3 text-sm text-ink-300 hover:text-ink-100 transition-colors duration-200 cursor-pointer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download CV
+          </a>
+        </div>
+
+        <!-- Terminal card -->
+        <div class="reveal mt-14 max-w-2xl rounded-xl border border-ink-600 bg-ink-800/80 shadow-2xl shadow-black/40">
+          <div class="flex items-center gap-2 border-b border-ink-600 px-4 py-2">
+            <span class="h-3 w-3 rounded-full bg-red-500/70"></span>
+            <span class="h-3 w-3 rounded-full bg-yellow-500/70"></span>
+            <span class="h-3 w-3 rounded-full bg-green-500/70"></span>
+            <span class="ml-2 font-mono text-xs text-ink-400">~/about-me.sh</span>
+          </div>
+          <pre class="px-5 py-4 font-mono text-sm text-ink-200 leading-relaxed overflow-x-auto"><span class="text-ink-400">$</span> whoami
+<span class="text-emerald-400">alex</span> &mdash; junior frontend developer, 1.5 yrs of self-taught + bootcamp
+<span class="text-ink-400">$</span> stack --primary
+<span class="text-brand">react</span> typescript tailwind nextjs vite
+<span class="text-ink-400">$</span> currently_learning
+testing-library, performance budgets, design systems<span class="caret" aria-hidden="true"></span></pre>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============== PROJECTS ============== -->
+    <section id="projects" aria-labelledby="projects-h" class="relative py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-4">
+        <div class="reveal flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="font-mono text-xs uppercase tracking-widest text-brand">// 01 &mdash; selected work</p>
+            <h2 id="projects-h" class="mt-3 text-3xl sm:text-4xl font-semibold text-ink-100">Projects I&rsquo;m proud of</h2>
+            <p class="mt-3 max-w-2xl text-ink-300">A small but honest set. Each one taught me something I now ship by default: a11y, performance budgets, or a cleaner state model.</p>
+          </div>
+          <a href="#" class="inline-flex items-center gap-2 text-sm text-ink-300 hover:text-ink-100 transition-colors duration-200 cursor-pointer">
+            All on GitHub
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </a>
+        </div>
+
+        <ul role="list" class="reveal mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- Card template repeats; varying spans for masonry feel -->
+          <li class="group sm:col-span-2 lg:row-span-2">
+            <a href="#" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-600 bg-ink-800/70 hover:border-brand/60 transition-colors duration-300 cursor-pointer">
+              <div class="relative aspect-[16/10] overflow-hidden">
+                <div class="absolute inset-0 bg-[radial-gradient(80%_80%_at_30%_20%,rgba(37,99,235,0.35),transparent_60%),linear-gradient(135deg,#0F172A,#020617)]"></div>
+                <div class="absolute inset-6 rounded-xl border border-white/10 bg-ink-900/60 backdrop-blur-sm grid place-items-center">
+                  <span class="font-mono text-xs text-ink-300">npm run dev</span>
+                </div>
+              </div>
+              <div class="flex flex-1 flex-col gap-3 p-6">
+                <div class="flex items-center gap-2 text-xs font-mono text-ink-400">
+                  <span>2025</span><span aria-hidden="true">&middot;</span><span>Featured</span>
+                </div>
+                <h3 class="text-xl font-semibold text-ink-100 group-hover:text-brand transition-colors duration-200">Lumen &mdash; component library</h3>
+                <p class="text-ink-300">A 30-component library with full keyboard support, ARIA patterns, and a dark-first theme. Documented in Storybook, tested with Playwright.</p>
+                <ul class="mt-2 flex flex-wrap gap-2 font-mono text-xs">
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">React</li>
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">TypeScript</li>
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">Tailwind</li>
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">Storybook</li>
+                </ul>
+              </div>
+            </a>
+          </li>
+
+          <li class="group">
+            <a href="#" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-600 bg-ink-800/70 hover:border-brand/60 transition-colors duration-300 cursor-pointer">
+              <div class="relative aspect-[16/10] overflow-hidden">
+                <div class="absolute inset-0 bg-[linear-gradient(135deg,#1E293B,#0B1220)]"></div>
+                <svg class="absolute inset-0 m-auto h-16 w-16 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2v20M2 12h20" stroke-linecap="round"/></svg>
+              </div>
+              <div class="flex flex-1 flex-col gap-3 p-6">
+                <div class="flex items-center gap-2 text-xs font-mono text-ink-400"><span>2025</span></div>
+                <h3 class="text-xl font-semibold text-ink-100 group-hover:text-brand transition-colors duration-200">Pulse Dashboard</h3>
+                <p class="text-ink-300">Realtime KPI dashboard with virtualized tables and chart-level accessibility.</p>
+                <ul class="mt-2 flex flex-wrap gap-2 font-mono text-xs">
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">Next.js</li>
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">Recharts</li>
+                </ul>
+              </div>
+            </a>
+          </li>
+
+          <li class="group">
+            <a href="#" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-600 bg-ink-800/70 hover:border-brand/60 transition-colors duration-300 cursor-pointer">
+              <div class="relative aspect-[16/10] overflow-hidden">
+                <div class="absolute inset-0 bg-[linear-gradient(135deg,#0B132B,#1C2541)]"></div>
+                <svg class="absolute inset-0 m-auto h-14 w-14 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="flex flex-1 flex-col gap-3 p-6">
+                <div class="flex items-center gap-2 text-xs font-mono text-ink-400"><span>2024</span></div>
+                <h3 class="text-xl font-semibold text-ink-100 group-hover:text-brand transition-colors duration-200">Heartbeat</h3>
+                <p class="text-ink-300">PWA habit tracker with offline-first storage and 100/100 Lighthouse PWA score.</p>
+                <ul class="mt-2 flex flex-wrap gap-2 font-mono text-xs">
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">Vite</li>
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">IndexedDB</li>
+                </ul>
+              </div>
+            </a>
+          </li>
+
+          <li class="group sm:col-span-2">
+            <a href="#" class="relative flex h-full flex-col sm:flex-row overflow-hidden rounded-2xl border border-ink-600 bg-ink-800/70 hover:border-brand/60 transition-colors duration-300 cursor-pointer">
+              <div class="relative sm:w-1/2 aspect-[16/10] sm:aspect-auto overflow-hidden">
+                <div class="absolute inset-0 bg-[linear-gradient(135deg,#0F172A,#1E1B4B)]"></div>
+                <div class="absolute inset-6 rounded-xl border border-white/10 bg-ink-900/60 grid place-items-center">
+                  <span class="font-mono text-xs text-ink-300">// open-source</span>
+                </div>
+              </div>
+              <div class="flex flex-1 flex-col gap-3 p-6">
+                <div class="flex items-center gap-2 text-xs font-mono text-ink-400"><span>2024</span><span>&middot;</span><span>OSS</span></div>
+                <h3 class="text-xl font-semibold text-ink-100 group-hover:text-brand transition-colors duration-200">a11y-checklist</h3>
+                <p class="text-ink-300">A CLI that audits a Next.js project against a curated WCAG 2.2 AA checklist. 480+ stars on GitHub.</p>
+                <ul class="mt-2 flex flex-wrap gap-2 font-mono text-xs">
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">Node.js</li>
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">CLI</li>
+                  <li class="rounded-md bg-ink-700 px-2 py-1 text-ink-200">a11y</li>
+                </ul>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+
+    <!-- ============== ABOUT ============== -->
+    <section id="about" aria-labelledby="about-h" class="relative py-20 sm:py-28 border-t border-ink-700/60">
+      <div class="mx-auto max-w-6xl px-4 grid gap-12 lg:grid-cols-12">
+        <div class="reveal lg:col-span-5">
+          <p class="font-mono text-xs uppercase tracking-widest text-brand">// 02 &mdash; about</p>
+          <h2 id="about-h" class="mt-3 text-3xl sm:text-4xl font-semibold text-ink-100">A junior dev with a senior obsession for the basics.</h2>
+        </div>
+        <div class="reveal lg:col-span-7 space-y-5 text-ink-300 text-lg leading-relaxed">
+          <p>
+            I switched from QA into frontend in 2023 after one too many tickets about &ldquo;the button you can&rsquo;t reach with Tab.&rdquo; That experience shaped how I work today: I treat semantics, contrast and keyboard support as features, not afterthoughts.
+          </p>
+          <p>
+            Most days I&rsquo;m in <span class="font-mono text-ink-100">React + TypeScript</span>, sometimes Next.js. I care about small bundles, predictable state, and a design system you can trust at 2&nbsp;am.
+          </p>
+          <p>
+            Outside the editor: rock climbing, mechanical keyboards, and trying to brew espresso that doesn&rsquo;t taste like burnt rubber.
+          </p>
+          <dl class="mt-8 grid grid-cols-3 gap-6 border-t border-ink-700 pt-8">
+            <div>
+              <dt class="font-mono text-xs text-ink-400">Years coding</dt>
+              <dd class="mt-1 text-2xl font-semibold text-ink-100">1.5</dd>
+            </div>
+            <div>
+              <dt class="font-mono text-xs text-ink-400">Shipped projects</dt>
+              <dd class="mt-1 text-2xl font-semibold text-ink-100">12</dd>
+            </div>
+            <div>
+              <dt class="font-mono text-xs text-ink-400">OSS stars</dt>
+              <dd class="mt-1 text-2xl font-semibold text-ink-100">600+</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== SKILLS ============== -->
+    <section id="skills" aria-labelledby="skills-h" class="relative py-20 sm:py-28 border-t border-ink-700/60">
+      <div class="mx-auto max-w-6xl px-4">
+        <div class="reveal">
+          <p class="font-mono text-xs uppercase tracking-widest text-brand">// 03 &mdash; toolkit</p>
+          <h2 id="skills-h" class="mt-3 text-3xl sm:text-4xl font-semibold text-ink-100">What I use, day to day</h2>
+        </div>
+
+        <div class="reveal mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <article class="rounded-2xl border border-ink-600 bg-ink-800/70 p-6">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-lg bg-ink-700 text-brand">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </span>
+              <h3 class="text-lg font-semibold text-ink-100">Core</h3>
+            </div>
+            <ul class="mt-4 flex flex-wrap gap-2 font-mono text-xs">
+              <li class="rounded-md bg-ink-700 px-2 py-1">HTML</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">CSS</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">JavaScript</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">TypeScript</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">Git</li>
+            </ul>
+          </article>
+
+          <article class="rounded-2xl border border-ink-600 bg-ink-800/70 p-6">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-lg bg-ink-700 text-brand">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1A1.7 1.7 0 0 0 9 19.3a1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1A1.7 1.7 0 0 0 4.7 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9c.3.6.9 1 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+              </span>
+              <h3 class="text-lg font-semibold text-ink-100">Frameworks</h3>
+            </div>
+            <ul class="mt-4 flex flex-wrap gap-2 font-mono text-xs">
+              <li class="rounded-md bg-ink-700 px-2 py-1">React</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">Next.js</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">Tailwind</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">Vite</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">Zustand</li>
+            </ul>
+          </article>
+
+          <article class="rounded-2xl border border-ink-600 bg-ink-800/70 p-6">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-lg bg-ink-700 text-brand">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </span>
+              <h3 class="text-lg font-semibold text-ink-100">Quality</h3>
+            </div>
+            <ul class="mt-4 flex flex-wrap gap-2 font-mono text-xs">
+              <li class="rounded-md bg-ink-700 px-2 py-1">Vitest</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">Testing Library</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">Playwright</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">Lighthouse CI</li>
+              <li class="rounded-md bg-ink-700 px-2 py-1">axe-core</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============== CONTACT ============== -->
+    <section id="contact" aria-labelledby="contact-h" class="relative py-20 sm:py-28 border-t border-ink-700/60">
+      <div class="mx-auto max-w-6xl px-4">
+        <div class="reveal grid gap-10 lg:grid-cols-12 items-start">
+          <div class="lg:col-span-5">
+            <p class="font-mono text-xs uppercase tracking-widest text-brand">// 04 &mdash; contact</p>
+            <h2 id="contact-h" class="mt-3 text-3xl sm:text-4xl font-semibold text-ink-100">Let&rsquo;s build something.</h2>
+            <p class="mt-4 text-ink-300">I&rsquo;m looking for a junior or trainee role in an engineering team that values accessibility and craft. If that&rsquo;s yours, say hi.</p>
+            <ul class="mt-8 space-y-3 font-mono text-sm">
+              <li class="flex items-center gap-3 text-ink-200">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <a href="mailto:hello@alexcarter.dev" class="hover:text-ink-100 transition-colors duration-200 cursor-pointer">hello@alexcarter.dev</a>
+              </li>
+              <li class="flex items-center gap-3 text-ink-200">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                <a href="#" class="hover:text-ink-100 transition-colors duration-200 cursor-pointer">github.com/alexcarter</a>
+              </li>
+              <li class="flex items-center gap-3 text-ink-200">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                <a href="#" class="hover:text-ink-100 transition-colors duration-200 cursor-pointer">linkedin.com/in/alexcarter</a>
+              </li>
+            </ul>
+          </div>
+
+          <form class="lg:col-span-7 rounded-2xl border border-ink-600 bg-ink-800/70 p-6 sm:p-8 space-y-5" novalidate>
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label for="name" class="block text-sm text-ink-200">Your name</label>
+                <input id="name" name="name" type="text" required autocomplete="name"
+                  class="mt-2 w-full rounded-lg border border-ink-600 bg-ink-900 px-3 py-2.5 text-ink-100 placeholder:text-ink-400 focus:border-brand focus:outline-none transition-colors duration-200"
+                  placeholder="Ada Lovelace" />
+              </div>
+              <div>
+                <label for="email" class="block text-sm text-ink-200">Email</label>
+                <input id="email" name="email" type="email" required autocomplete="email"
+                  class="mt-2 w-full rounded-lg border border-ink-600 bg-ink-900 px-3 py-2.5 text-ink-100 placeholder:text-ink-400 focus:border-brand focus:outline-none transition-colors duration-200"
+                  placeholder="you@company.com" />
+              </div>
+            </div>
+            <div>
+              <label for="message" class="block text-sm text-ink-200">Message</label>
+              <textarea id="message" name="message" rows="5" required
+                class="mt-2 w-full rounded-lg border border-ink-600 bg-ink-900 px-3 py-2.5 text-ink-100 placeholder:text-ink-400 focus:border-brand focus:outline-none transition-colors duration-200"
+                placeholder="Tell me about the role, the team, the codebase&hellip;"></textarea>
+            </div>
+            <div class="flex items-center justify-between gap-3 flex-wrap">
+              <p class="text-xs text-ink-400">I&rsquo;ll reply within 48&nbsp;hours, on weekdays.</p>
+              <button type="submit"
+                class="inline-flex items-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-hover transition-colors duration-200 cursor-pointer">
+                Send message
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============== FOOTER ============== -->
+  <footer class="border-t border-ink-700/60 py-10">
+    <div class="mx-auto max-w-6xl px-4 flex flex-wrap items-center justify-between gap-4">
+      <p class="font-mono text-xs text-ink-400">&copy; 2026 Alex Carter &mdash; built with <span class="text-ink-200">HTML</span>, <span class="text-ink-200">Tailwind</span> &amp; care.</p>
+      <a href="#top" class="font-mono text-xs text-ink-300 hover:text-ink-100 transition-colors duration-200 cursor-pointer">back to top &uarr;</a>
+    </div>
+  </footer>
+
+  <script>
+    // Intersection Observer reveal (skipped if user prefers reduced motion)
+    (function () {
+      var prm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var els = document.querySelectorAll('.reveal');
+      if (prm || !('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>
