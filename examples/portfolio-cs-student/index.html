@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kacper Nowak — CS student · data, homelab, Roblox dev</title>
+  <meta name="description" content="Personal site of Kacper Nowak, a first-year CS student from Poland. Data analysis with Python, a self-hosted Linux homelab, Docker, networking and Roblox game dev." />
+  <meta name="theme-color" content="#0B1220" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+          },
+          colors: {
+            ink: {
+              950: '#070B14',
+              900: '#0B1220',
+              800: '#0F172A',
+              700: '#1E293B',
+              600: '#334155',
+              500: '#475569',
+              400: '#64748B',
+              300: '#94A3B8',
+              200: '#CBD5E1',
+              100: '#E2E8F0',
+              50:  '#F1F5F9',
+            },
+            run:  { DEFAULT: '#22C55E', dim: '#16A34A' },
+            data: { DEFAULT: '#38BDF8', dim: '#0EA5E9' },
+            muse: { DEFAULT: '#A78BFA', dim: '#8B5CF6' },
+            warn: { DEFAULT: '#F59E0B' },
+          },
+        }
+      }
+    }
+  </script>
+
+
+  <style>
+    html { color-scheme: dark; }
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+    /* Subtle blueprint grid */
+    .bp-grid {
+      background-image:
+        linear-gradient(rgba(56,189,248,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,0.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 35%, transparent 100%);
+    }
+
+    /* Soft CRT scanline overlay (very subtle, AA-safe) */
+    .scanlines::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(180deg, rgba(255,255,255,0.020) 0 1px, transparent 1px 3px);
+      mix-blend-mode: overlay;
+    }
+
+    /* HUD corner brackets */
+    .hud { position: relative; }
+    .hud::before, .hud::after,
+    .hud > .hud-c1, .hud > .hud-c2 {
+      content: ""; position: absolute; width: 14px; height: 14px;
+      border-color: rgba(56,189,248,0.55); border-style: solid; pointer-events: none;
+    }
+    .hud::before { top: -1px; left: -1px;  border-width: 1px 0 0 1px; }
+    .hud::after  { top: -1px; right: -1px; border-width: 1px 1px 0 0; }
+    .hud > .hud-c1 { bottom: -1px; left: -1px; border-width: 0 0 1px 1px; }
+    .hud > .hud-c2 { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+
+    /* Reveal on scroll */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease-out, transform .6s ease-out; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* LED dot */
+    .led { box-shadow: 0 0 0 2px rgba(34,197,94,0.15), 0 0 8px rgba(34,197,94,0.55); }
+
+    /* Caret */
+    .caret { display:inline-block; width:.55ch; height:1em; vertical-align:-2px; background:#22C55E; margin-left:2px; animation: blink 1.05s steps(2,end) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Marquee */
+    .marquee { display: flex; gap: 3rem; animation: scroll-x 38s linear infinite; }
+    @keyframes scroll-x { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* Focus ring */
+    :focus-visible { outline: 2px solid #38BDF8; outline-offset: 3px; border-radius: 6px; }
+
+    /* GitHub activity squares */
+    .gh-cell { width: 100%; aspect-ratio: 1 / 1; border-radius: 2px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+      .marquee { animation: none !important; }
+      .caret { animation: none !important; }
+      * { animation-duration: 0s !important; transition-duration: 0s !important; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body class="bg-ink-900 text-ink-200 antialiased selection:bg-data/30 selection:text-white">
+
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-ink-700 focus:text-ink-50 focus:px-3 focus:py-2 focus:rounded-md">Skip to content</a>
+
+
+  <!-- ============== STATUS BAR (top) ============== -->
+  <div role="status" aria-label="System status" class="fixed inset-x-0 top-0 z-50 border-b border-ink-700/80 bg-ink-950/85 backdrop-blur">
+    <div class="mx-auto max-w-7xl px-4 h-9 flex items-center justify-between font-mono text-[11px] text-ink-300">
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-2"><span class="led h-1.5 w-1.5 rounded-full bg-run"></span><span class="text-ink-200">homelab</span> <span class="text-ink-500">online</span></span>
+        <span class="hidden sm:flex items-center gap-2 text-ink-400"><span class="text-data">uptime</span> 47d 12h</span>
+        <span class="hidden md:flex items-center gap-2 text-ink-400"><span class="text-data">cpu</span> 12% <span class="text-ink-600">|</span> <span class="text-data">mem</span> 38%</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="hidden sm:inline text-ink-400">Warsaw / UTC+1</span>
+        <span class="text-ink-300" id="clock">--:--:--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== NAV ============== -->
+  <header class="fixed inset-x-0 top-9 z-40 px-4 pt-3">
+    <nav aria-label="Primary" class="mx-auto max-w-7xl rounded-xl border border-ink-700 bg-ink-900/75 backdrop-blur-md">
+      <div class="flex items-center justify-between px-4 sm:px-5 py-3">
+        <a href="#top" class="flex items-center gap-3 cursor-pointer group">
+          <span class="grid h-9 w-9 place-items-center rounded-md border border-ink-700 bg-ink-800 font-mono text-data text-sm group-hover:border-data transition-colors duration-200">{kn}</span>
+          <span class="font-mono text-sm text-ink-200"><span class="text-run">user@</span>kacper-nowak<span class="text-ink-500">:~$</span></span>
+        </a>
+        <ul class="hidden md:flex items-center gap-1 text-sm font-mono">
+          <li><a href="#projects" class="px-3 py-2 rounded-md text-ink-300 hover:text-ink-50 hover:bg-ink-800 transition-colors duration-200 cursor-pointer">./projects</a></li>
+          <li><a href="#homelab"  class="px-3 py-2 rounded-md text-ink-300 hover:text-ink-50 hover:bg-ink-800 transition-colors duration-200 cursor-pointer">./homelab</a></li>
+          <li><a href="#skills"   class="px-3 py-2 rounded-md text-ink-300 hover:text-ink-50 hover:bg-ink-800 transition-colors duration-200 cursor-pointer">./skills</a></li>
+          <li><a href="#activity" class="px-3 py-2 rounded-md text-ink-300 hover:text-ink-50 hover:bg-ink-800 transition-colors duration-200 cursor-pointer">./activity</a></li>
+          <li><a href="#contact"  class="px-3 py-2 rounded-md text-ink-300 hover:text-ink-50 hover:bg-ink-800 transition-colors duration-200 cursor-pointer">./contact</a></li>
+        </ul>
+        <a href="#contact" class="inline-flex items-center gap-2 rounded-md border border-run/40 bg-run/10 px-3.5 py-2 text-sm font-mono text-run hover:bg-run/15 hover:border-run transition-colors duration-200 cursor-pointer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          ssh me
+        </a>
+      </div>
+    </nav>
+  </header>
+
+
+  <main id="main">
+    <!-- ============== HERO ============== -->
+    <section id="top" class="relative overflow-hidden pt-40 sm:pt-44 pb-16 sm:pb-20 scanlines">
+      <div class="absolute inset-0 bp-grid pointer-events-none" aria-hidden="true"></div>
+      <div class="absolute -top-24 left-1/2 -translate-x-1/2 h-[520px] w-[820px] bg-[radial-gradient(closest-side,rgba(56,189,248,0.18),transparent)] pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative mx-auto max-w-7xl px-4 grid gap-12 lg:grid-cols-12 lg:items-end">
+        <div class="lg:col-span-7">
+          <div class="reveal">
+            <span class="inline-flex items-center gap-2 rounded-full border border-ink-700 bg-ink-800/60 px-3 py-1 font-mono text-xs">
+              <span class="led h-1.5 w-1.5 rounded-full bg-run"></span>
+              <span class="text-ink-200">first-year CS @ Politechnika</span>
+              <span class="text-ink-500">·</span>
+              <span class="text-data">Poland 🇵🇱</span>
+            </span>
+          </div>
+          <h1 class="reveal mt-6 font-mono text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-ink-50 leading-[1.05]">
+            <span class="text-ink-500">&gt;</span> hi, I&rsquo;m
+            <span class="text-data">Kacper</span>.<br/>
+            I turn <span class="text-run">data</span>, <span class="text-muse">racks</span> &amp; <span class="text-warn">Roblox</span> <br class="hidden sm:block"/>
+            into things that <span class="underline decoration-data/60 decoration-2 underline-offset-4">actually run</span>.<span class="caret" aria-hidden="true"></span>
+          </h1>
+          <p class="reveal mt-6 max-w-xl text-ink-300 text-lg leading-relaxed">
+            First-year computer science student. Self-hosting a Linux homelab, breaking it on weekends, and writing Python scripts to make sense of the chaos. On Saturdays I ship Roblox experiences for fun.
+          </p>
+
+          <div class="reveal mt-7 flex flex-wrap items-center gap-3">
+            <a href="#projects" class="inline-flex items-center gap-2 rounded-md bg-run px-5 py-3 font-mono text-sm font-medium text-ink-950 hover:bg-run-dim transition-colors duration-200 cursor-pointer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              run --projects
+            </a>
+            <a href="#homelab" class="inline-flex items-center gap-2 rounded-md border border-ink-600 bg-ink-800/70 px-5 py-3 font-mono text-sm text-ink-100 hover:bg-ink-700 hover:border-data transition-colors duration-200 cursor-pointer">
+              cat homelab.yml
+            </a>
+            <a href="#" class="inline-flex items-center gap-2 px-3 py-3 font-mono text-sm text-ink-300 hover:text-ink-50 transition-colors duration-200 cursor-pointer">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              CV.pdf
+            </a>
+          </div>
+
+          <!-- KPI strip -->
+          <dl class="reveal mt-12 grid grid-cols-2 sm:grid-cols-4 gap-px bg-ink-700/70 rounded-md overflow-hidden border border-ink-700">
+            <div class="bg-ink-900 p-4">
+              <dt class="font-mono text-[11px] uppercase tracking-wider text-ink-400">containers</dt>
+              <dd class="mt-1 font-mono text-2xl text-data">23</dd>
+            </div>
+            <div class="bg-ink-900 p-4">
+              <dt class="font-mono text-[11px] uppercase tracking-wider text-ink-400">VLANs</dt>
+              <dd class="mt-1 font-mono text-2xl text-run">4</dd>
+            </div>
+            <div class="bg-ink-900 p-4">
+              <dt class="font-mono text-[11px] uppercase tracking-wider text-ink-400">commits / yr</dt>
+              <dd class="mt-1 font-mono text-2xl text-muse">612</dd>
+            </div>
+            <div class="bg-ink-900 p-4">
+              <dt class="font-mono text-[11px] uppercase tracking-wider text-ink-400">roblox plays</dt>
+              <dd class="mt-1 font-mono text-2xl text-warn">8.4k</dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Terminal card -->
+        <div class="reveal lg:col-span-5">
+          <div class="hud rounded-md border border-ink-700 bg-ink-950/80 shadow-2xl shadow-black/50">
+            <span class="hud-c1"></span><span class="hud-c2"></span>
+            <div class="flex items-center gap-2 border-b border-ink-700 px-3 py-2">
+              <span class="h-2.5 w-2.5 rounded-full bg-red-500/70"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-warn/80"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-run/80"></span>
+              <span class="ml-2 font-mono text-[11px] text-ink-400">kacper@nas:~</span>
+              <span class="ml-auto font-mono text-[11px] text-ink-500">tmux 0:1*</span>
+            </div>
+<pre class="px-4 py-4 font-mono text-[13px] leading-relaxed text-ink-200 overflow-x-auto"><span class="text-ink-500">$</span> whoami --short
+<span class="text-data">kacper</span> · cs y1 · poland · 19 yrs
+<span class="text-ink-500">$</span> stack --primary
+<span class="text-run">python</span> pandas duckdb · <span class="text-data">linux</span> proxmox · <span class="text-muse">docker</span> · <span class="text-warn">luau</span>/roblox
+<span class="text-ink-500">$</span> currently --learning
+networking (ccna), polars, terraform
+<span class="text-ink-500">$</span> open_to
+internships, junior data &amp; devops, OSS
+<span class="text-ink-500">$</span> _<span class="caret" aria-hidden="true"></span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== TICKER ============== -->
+    <section aria-hidden="true" class="border-y border-ink-700/80 bg-ink-950/60 overflow-hidden">
+      <div class="marquee py-3 font-mono text-xs text-ink-400 whitespace-nowrap">
+        <div class="flex gap-12 pr-12 shrink-0">
+          <span><span class="text-data">[NET]</span> pfSense · 192.168.10.0/24 · 4 vlans</span>
+          <span><span class="text-run">[OS]</span> proxmox 8.2 · debian 12 · arch btw</span>
+          <span><span class="text-muse">[CONT]</span> 23 docker svcs · portainer · traefik</span>
+          <span><span class="text-warn">[GAME]</span> luau · roblox studio · rojo</span>
+          <span><span class="text-data">[DATA]</span> pandas · duckdb · matplotlib · sql</span>
+          <span><span class="text-run">[SEC]</span> wireguard · pi-hole · fail2ban</span>
+        </div>
+        <div class="flex gap-12 pr-12 shrink-0" aria-hidden="true">
+          <span><span class="text-data">[NET]</span> pfSense · 192.168.10.0/24 · 4 vlans</span>
+          <span><span class="text-run">[OS]</span> proxmox 8.2 · debian 12 · arch btw</span>
+          <span><span class="text-muse">[CONT]</span> 23 docker svcs · portainer · traefik</span>
+          <span><span class="text-warn">[GAME]</span> luau · roblox studio · rojo</span>
+          <span><span class="text-data">[DATA]</span> pandas · duckdb · matplotlib · sql</span>
+          <span><span class="text-run">[SEC]</span> wireguard · pi-hole · fail2ban</span>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============== FEATURED PROJECTS ============== -->
+    <section id="projects" aria-labelledby="projects-h" class="relative py-20 sm:py-28">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="reveal flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="font-mono text-xs text-data">// 01 — featured projects</p>
+            <h2 id="projects-h" class="mt-3 font-mono text-3xl sm:text-4xl text-ink-50">things I built &amp; (mostly) didn&rsquo;t break</h2>
+            <p class="mt-3 max-w-2xl text-ink-300">A mix of data analysis, infra automation and Roblox experiments. Each ships with a README that explains the trade-offs, not just the demo.</p>
+          </div>
+          <a href="#" class="font-mono text-sm text-ink-300 hover:text-data transition-colors duration-200 cursor-pointer">→ all repos on GitHub</a>
+        </div>
+
+        <!-- Asymmetric 12-col grid -->
+        <ul role="list" class="reveal mt-12 grid grid-cols-12 gap-4 sm:gap-5">
+          <!-- Project 1 — wide -->
+          <li class="col-span-12 lg:col-span-7 group">
+            <a href="#" class="hud relative flex h-full flex-col overflow-hidden rounded-md border border-ink-700 bg-ink-800/60 hover:border-data transition-colors duration-300 cursor-pointer">
+              <span class="hud-c1"></span><span class="hud-c2"></span>
+              <div class="relative aspect-[16/8] overflow-hidden border-b border-ink-700 bg-ink-950">
+                <div class="absolute inset-0 bp-grid opacity-60"></div>
+                <!-- Mock chart -->
+                <svg viewBox="0 0 400 160" class="absolute inset-0 m-auto w-[88%] h-[80%]" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.45"/>
+                      <stop offset="100%" stop-color="#38BDF8" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <g stroke="rgba(148,163,184,0.15)" stroke-width="1">
+                    <line x1="0" y1="40"  x2="400" y2="40"/>
+                    <line x1="0" y1="80"  x2="400" y2="80"/>
+                    <line x1="0" y1="120" x2="400" y2="120"/>
+                  </g>
+                  <path d="M0,120 L40,110 L80,95 L120,100 L160,80 L200,70 L240,55 L280,60 L320,40 L360,30 L400,18 L400,160 L0,160 Z" fill="url(#g1)"/>
+                  <path d="M0,120 L40,110 L80,95 L120,100 L160,80 L200,70 L240,55 L280,60 L320,40 L360,30 L400,18" fill="none" stroke="#38BDF8" stroke-width="2"/>
+                  <g fill="#22C55E">
+                    <circle cx="200" cy="70" r="3"/><circle cx="320" cy="40" r="3"/><circle cx="400" cy="18" r="3"/>
+                  </g>
+                </svg>
+                <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded border border-data/40 bg-data/10 px-2 py-0.5 font-mono text-[10px] text-data">DATA</span>
+              </div>
+              <div class="p-6 flex flex-1 flex-col gap-3">
+                <div class="flex items-center gap-2 font-mono text-[11px] text-ink-400"><span>2025</span><span>·</span><span>featured</span></div>
+                <h3 class="font-mono text-xl text-ink-50 group-hover:text-data transition-colors duration-200">warsaw-rents</h3>
+                <p class="text-ink-300">Scraped 14k listings from Polish real-estate sites, normalised them with pandas + duckdb, and shipped a notebook that explains the m² price gradient by metro line. Reproducible with one make command.</p>
+                <ul class="mt-1 flex flex-wrap gap-1.5 font-mono text-[11px]">
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5 text-ink-200">python</li>
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5 text-ink-200">pandas</li>
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5 text-ink-200">duckdb</li>
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5 text-ink-200">playwright</li>
+                </ul>
+                <div class="mt-auto pt-4 flex items-center justify-between border-t border-ink-700/60">
+                  <span class="font-mono text-[11px] text-ink-400">★ 142 · 23 forks</span>
+                  <span class="font-mono text-[11px] text-data group-hover:translate-x-1 transition-transform duration-200">cd ./readme →</span>
+                </div>
+              </div>
+            </a>
+          </li>
+
+          <!-- Project 2 — tall -->
+          <li class="col-span-12 sm:col-span-6 lg:col-span-5 group">
+            <a href="#" class="hud relative flex h-full flex-col overflow-hidden rounded-md border border-ink-700 bg-ink-800/60 hover:border-run transition-colors duration-300 cursor-pointer">
+              <span class="hud-c1"></span><span class="hud-c2"></span>
+              <div class="relative aspect-[16/9] overflow-hidden border-b border-ink-700 bg-ink-950">
+                <div class="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_50%,rgba(34,197,94,0.18),transparent_70%)]"></div>
+                <pre class="absolute inset-4 font-mono text-[10px] leading-snug text-ink-300 overflow-hidden">
+<span class="text-run">$</span> ./labctl status
+<span class="text-data">[ok]</span>  pihole       192.168.10.2
+<span class="text-data">[ok]</span>  jellyfin     192.168.20.5
+<span class="text-data">[ok]</span>  gitea        192.168.20.7
+<span class="text-data">[ok]</span>  grafana      192.168.20.9
+<span class="text-warn">[warn]</span> backups      02:14 ago
+<span class="text-data">[ok]</span>  wireguard    3 peers
+<span class="text-run">$</span> _</pre>
+                <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded border border-run/40 bg-run/10 px-2 py-0.5 font-mono text-[10px] text-run">INFRA</span>
+              </div>
+              <div class="p-6 flex flex-1 flex-col gap-3">
+                <h3 class="font-mono text-xl text-ink-50 group-hover:text-run transition-colors duration-200">labctl</h3>
+                <p class="text-ink-300">CLI wrapper around docker-compose, ssh and a wee bit of paramiko that lets me deploy and health-check the entire homelab from my laptop in &lt;5s.</p>
+                <ul class="mt-1 flex flex-wrap gap-1.5 font-mono text-[11px]">
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">python</li>
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">click</li>
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">ssh</li>
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">bash</li>
+                </ul>
+              </div>
+            </a>
+          </li>
+
+          <!-- Project 3 -->
+          <li class="col-span-12 sm:col-span-6 lg:col-span-4 group">
+            <a href="#" class="hud relative flex h-full flex-col overflow-hidden rounded-md border border-ink-700 bg-ink-800/60 hover:border-warn transition-colors duration-300 cursor-pointer">
+              <span class="hud-c1"></span><span class="hud-c2"></span>
+              <div class="relative aspect-[16/9] overflow-hidden border-b border-ink-700 bg-ink-950">
+                <div class="absolute inset-0 bg-[linear-gradient(135deg,#1E1B4B,#0B1220)]"></div>
+                <svg class="absolute inset-0 m-auto w-20 h-20 text-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M9 8l4 4-4 4"/><line x1="14" y1="16" x2="17" y2="16"/>
+                </svg>
+                <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded border border-warn/40 bg-warn/10 px-2 py-0.5 font-mono text-[10px] text-warn">GAME</span>
+              </div>
+              <div class="p-6 flex flex-1 flex-col gap-3">
+                <h3 class="font-mono text-lg text-ink-50 group-hover:text-warn transition-colors duration-200">tower of pierogi</h3>
+                <p class="text-ink-300 text-sm">Roblox obby with procedurally placed checkpoints. 8.4k plays, 92% positive. Built with Rojo + Luau strict types.</p>
+                <ul class="mt-1 flex flex-wrap gap-1.5 font-mono text-[11px]">
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">luau</li>
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">rojo</li>
+                </ul>
+              </div>
+            </a>
+          </li>
+
+          <!-- Project 4 -->
+          <li class="col-span-12 sm:col-span-6 lg:col-span-4 group">
+            <a href="#" class="hud relative flex h-full flex-col overflow-hidden rounded-md border border-ink-700 bg-ink-800/60 hover:border-muse transition-colors duration-300 cursor-pointer">
+              <span class="hud-c1"></span><span class="hud-c2"></span>
+              <div class="relative aspect-[16/9] overflow-hidden border-b border-ink-700 bg-ink-950">
+                <div class="absolute inset-0 bg-[linear-gradient(135deg,#312E81,#0B1220)]"></div>
+                <svg class="absolute inset-0 m-auto w-20 h-20 text-muse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>
+                </svg>
+                <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded border border-muse/40 bg-muse/10 px-2 py-0.5 font-mono text-[10px] text-muse">NET</span>
+              </div>
+              <div class="p-6 flex flex-1 flex-col gap-3">
+                <h3 class="font-mono text-lg text-ink-50 group-hover:text-muse transition-colors duration-200">subnet-vis</h3>
+                <p class="text-ink-300 text-sm">Browser tool that renders any /CIDR as a click-able subnet tree. Made it because I was tired of /24 math during my CCNA prep.</p>
+                <ul class="mt-1 flex flex-wrap gap-1.5 font-mono text-[11px]">
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">typescript</li>
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">svg</li>
+                </ul>
+              </div>
+            </a>
+          </li>
+
+          <!-- Project 5 -->
+          <li class="col-span-12 sm:col-span-6 lg:col-span-4 group">
+            <a href="#" class="hud relative flex h-full flex-col overflow-hidden rounded-md border border-ink-700 bg-ink-800/60 hover:border-data transition-colors duration-300 cursor-pointer">
+              <span class="hud-c1"></span><span class="hud-c2"></span>
+              <div class="relative aspect-[16/9] overflow-hidden border-b border-ink-700 bg-ink-950">
+                <div class="absolute inset-0 bg-[linear-gradient(135deg,#0C4A6E,#0B1220)]"></div>
+                <svg class="absolute inset-0 m-auto w-20 h-20 text-data" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="6" rx="1"/><rect x="3" y="14" width="18" height="6" rx="1"/>
+                  <circle cx="7" cy="7" r="0.8" fill="currentColor"/><circle cx="7" cy="17" r="0.8" fill="currentColor"/>
+                </svg>
+                <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded border border-data/40 bg-data/10 px-2 py-0.5 font-mono text-[10px] text-data">DATA</span>
+              </div>
+              <div class="p-6 flex flex-1 flex-col gap-3">
+                <h3 class="font-mono text-lg text-ink-50 group-hover:text-data transition-colors duration-200">jpk-parser</h3>
+                <p class="text-ink-300 text-sm">Python parser for Polish JPK_VAT XML files. Spits out tidy parquet you can throw straight at duckdb. Saved an accountant friend ~6h/month.</p>
+                <ul class="mt-1 flex flex-wrap gap-1.5 font-mono text-[11px]">
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">python</li>
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">lxml</li>
+                  <li class="rounded bg-ink-700/80 px-2 py-0.5">parquet</li>
+                </ul>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+
+    <!-- ============== HOMELAB ============== -->
+    <section id="homelab" aria-labelledby="homelab-h" class="relative py-20 sm:py-28 border-t border-ink-700/60 bg-ink-950/40">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="reveal max-w-3xl">
+          <p class="font-mono text-xs text-run">// 02 — homelab.yml</p>
+          <h2 id="homelab-h" class="mt-3 font-mono text-3xl sm:text-4xl text-ink-50">the rack that taught me linux</h2>
+          <p class="mt-3 text-ink-300">A second-hand mini-PC, a dusty NUC, and a Pi 4. Boring hardware, not-so-boring stack. Everything is IaC: blow it away and <code class="font-mono text-data">make up</code> rebuilds it in ~12 minutes.</p>
+        </div>
+
+        <!-- Rack diagram -->
+        <div class="reveal mt-12 grid gap-5 lg:grid-cols-12">
+          <!-- LEFT: rack -->
+          <div class="lg:col-span-7">
+            <div class="hud rounded-md border border-ink-700 bg-ink-900/60">
+              <span class="hud-c1"></span><span class="hud-c2"></span>
+              <div class="flex items-center justify-between border-b border-ink-700 px-4 py-2 font-mono text-[11px] text-ink-400">
+                <span>// rack /home/server</span>
+                <span class="flex items-center gap-2"><span class="led h-1.5 w-1.5 rounded-full bg-run"></span>3 nodes online</span>
+              </div>
+
+              <div class="p-4 sm:p-5 space-y-3">
+                <!-- Node 1 -->
+                <article class="rounded border border-ink-700 bg-ink-800/70 p-4">
+                  <header class="flex items-start justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                      <span class="grid h-9 w-9 place-items-center rounded border border-ink-700 bg-ink-900 text-data">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="4" width="20" height="6" rx="1"/><rect x="2" y="14" width="20" height="6" rx="1"/><circle cx="6" cy="7" r="0.8" fill="currentColor"/><circle cx="6" cy="17" r="0.8" fill="currentColor"/></svg>
+                      </span>
+                      <div>
+                        <h3 class="font-mono text-sm text-ink-50">node01 · proxmox-ve</h3>
+                        <p class="font-mono text-[11px] text-ink-400">i5-8500T · 32GB · 1TB nvme</p>
+                      </div>
+                    </div>
+                    <span class="inline-flex items-center gap-1.5 rounded border border-run/40 bg-run/10 px-2 py-0.5 font-mono text-[10px] text-run"><span class="led h-1 w-1 rounded-full bg-run"></span>up 47d</span>
+                  </header>
+                  <ul class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px]">
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5 text-ink-200">debian-vm</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5 text-ink-200">docker-host</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5 text-ink-200">k3s-master</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5 text-ink-200">opnsense</li>
+                  </ul>
+                  <!-- mini gauges -->
+                  <div class="mt-3 grid grid-cols-3 gap-3 font-mono text-[10px] text-ink-400">
+                    <div><div class="flex justify-between"><span>cpu</span><span class="text-ink-200">12%</span></div><div class="mt-1 h-1 rounded bg-ink-700 overflow-hidden"><div class="h-full bg-data" style="width:12%"></div></div></div>
+                    <div><div class="flex justify-between"><span>mem</span><span class="text-ink-200">38%</span></div><div class="mt-1 h-1 rounded bg-ink-700 overflow-hidden"><div class="h-full bg-data" style="width:38%"></div></div></div>
+                    <div><div class="flex justify-between"><span>disk</span><span class="text-ink-200">61%</span></div><div class="mt-1 h-1 rounded bg-ink-700 overflow-hidden"><div class="h-full bg-warn" style="width:61%"></div></div></div>
+                  </div>
+                </article>
+
+                <!-- Node 2 -->
+                <article class="rounded border border-ink-700 bg-ink-800/70 p-4">
+                  <header class="flex items-start justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                      <span class="grid h-9 w-9 place-items-center rounded border border-ink-700 bg-ink-900 text-muse">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                      </span>
+                      <div>
+                        <h3 class="font-mono text-sm text-ink-50">node02 · docker</h3>
+                        <p class="font-mono text-[11px] text-ink-400">NUC i3 · 16GB · 500GB</p>
+                      </div>
+                    </div>
+                    <span class="inline-flex items-center gap-1.5 rounded border border-run/40 bg-run/10 px-2 py-0.5 font-mono text-[10px] text-run"><span class="led h-1 w-1 rounded-full bg-run"></span>up 12d</span>
+                  </header>
+                  <ul class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px]">
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">jellyfin</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">gitea</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">grafana</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">paperless</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">traefik</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">vaultwarden</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">nextcloud</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">+ 16 more</li>
+                  </ul>
+                </article>
+
+                <!-- Node 3 -->
+                <article class="rounded border border-ink-700 bg-ink-800/70 p-4">
+                  <header class="flex items-start justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                      <span class="grid h-9 w-9 place-items-center rounded border border-ink-700 bg-ink-900 text-warn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+                      </span>
+                      <div>
+                        <h3 class="font-mono text-sm text-ink-50">node03 · pi-edge</h3>
+                        <p class="font-mono text-[11px] text-ink-400">Raspberry Pi 4 · 4GB</p>
+                      </div>
+                    </div>
+                    <span class="inline-flex items-center gap-1.5 rounded border border-warn/40 bg-warn/10 px-2 py-0.5 font-mono text-[10px] text-warn">backup mode</span>
+                  </header>
+                  <ul class="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-[11px]">
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">pi-hole</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">wireguard</li>
+                    <li class="rounded bg-ink-900 border border-ink-700 px-2 py-1.5">unbound</li>
+                  </ul>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: network + principles -->
+          <div class="lg:col-span-5 space-y-5">
+            <div class="hud rounded-md border border-ink-700 bg-ink-900/60 p-5">
+              <span class="hud-c1"></span><span class="hud-c2"></span>
+              <h3 class="font-mono text-sm text-data">// network topology</h3>
+              <ul class="mt-4 font-mono text-[12px] text-ink-200 space-y-2">
+                <li class="flex justify-between"><span class="text-ink-400">vlan10</span><span>mgmt</span><span class="text-data">10.0.10.0/24</span></li>
+                <li class="flex justify-between"><span class="text-ink-400">vlan20</span><span>services</span><span class="text-data">10.0.20.0/24</span></li>
+                <li class="flex justify-between"><span class="text-ink-400">vlan30</span><span>iot</span><span class="text-data">10.0.30.0/24</span></li>
+                <li class="flex justify-between"><span class="text-ink-400">vlan40</span><span>guest</span><span class="text-data">10.0.40.0/24</span></li>
+              </ul>
+              <p class="mt-4 text-[12px] text-ink-400 font-mono">wireguard tunnel · 51820/udp · 3 peers</p>
+            </div>
+
+            <div class="hud rounded-md border border-ink-700 bg-ink-900/60 p-5">
+              <span class="hud-c1"></span><span class="hud-c2"></span>
+              <h3 class="font-mono text-sm text-run">// operating principles</h3>
+              <ol class="mt-4 space-y-2.5 text-ink-300 text-sm">
+                <li class="flex gap-3"><span class="font-mono text-run shrink-0">01.</span> If it isn&rsquo;t in git, it doesn&rsquo;t exist.</li>
+                <li class="flex gap-3"><span class="font-mono text-run shrink-0">02.</span> Backups are tested, not just configured.</li>
+                <li class="flex gap-3"><span class="font-mono text-run shrink-0">03.</span> Every service: HTTPS, auth, observability.</li>
+                <li class="flex gap-3"><span class="font-mono text-run shrink-0">04.</span> Docs are written before the bug, not after.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============== SKILLS MATRIX ============== -->
+    <section id="skills" aria-labelledby="skills-h" class="relative py-20 sm:py-28 border-t border-ink-700/60">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="reveal max-w-3xl">
+          <p class="font-mono text-xs text-muse">// 03 — skills.matrix</p>
+          <h2 id="skills-h" class="mt-3 font-mono text-3xl sm:text-4xl text-ink-50">honest self-assessment</h2>
+          <p class="mt-3 text-ink-300">No imaginary 5-star ratings. Real levels: <span class="font-mono text-data">daily</span>, <span class="font-mono text-run">solid</span>, <span class="font-mono text-warn">learning</span>, <span class="font-mono text-ink-400">curious</span>.</p>
+        </div>
+
+        <div class="reveal mt-12 grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <!-- Data -->
+          <article class="hud rounded-md border border-ink-700 bg-ink-800/60 p-5">
+            <span class="hud-c1"></span><span class="hud-c2"></span>
+            <header class="flex items-center gap-3">
+              <span class="grid h-8 w-8 place-items-center rounded bg-data/10 text-data border border-data/30">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-7"/></svg>
+              </span>
+              <h3 class="font-mono text-sm text-ink-50">data</h3>
+            </header>
+            <ul class="mt-4 space-y-2 font-mono text-[12px]">
+              <li class="flex justify-between"><span class="text-ink-200">python</span><span class="text-data">daily</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">pandas</span><span class="text-data">daily</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">sql / duckdb</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">matplotlib</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">polars</span><span class="text-warn">learning</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">pytorch</span><span class="text-ink-400">curious</span></li>
+            </ul>
+          </article>
+
+          <!-- Linux / Ops -->
+          <article class="hud rounded-md border border-ink-700 bg-ink-800/60 p-5">
+            <span class="hud-c1"></span><span class="hud-c2"></span>
+            <header class="flex items-center gap-3">
+              <span class="grid h-8 w-8 place-items-center rounded bg-run/10 text-run border border-run/30">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+              </span>
+              <h3 class="font-mono text-sm text-ink-50">linux / ops</h3>
+            </header>
+            <ul class="mt-4 space-y-2 font-mono text-[12px]">
+              <li class="flex justify-between"><span class="text-ink-200">debian / arch</span><span class="text-data">daily</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">bash</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">systemd</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">proxmox</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">ansible</span><span class="text-warn">learning</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">terraform</span><span class="text-warn">learning</span></li>
+            </ul>
+          </article>
+
+          <!-- Containers / Net -->
+          <article class="hud rounded-md border border-ink-700 bg-ink-800/60 p-5">
+            <span class="hud-c1"></span><span class="hud-c2"></span>
+            <header class="flex items-center gap-3">
+              <span class="grid h-8 w-8 place-items-center rounded bg-muse/10 text-muse border border-muse/30">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              </span>
+              <h3 class="font-mono text-sm text-ink-50">containers / net</h3>
+            </header>
+            <ul class="mt-4 space-y-2 font-mono text-[12px]">
+              <li class="flex justify-between"><span class="text-ink-200">docker / compose</span><span class="text-data">daily</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">traefik</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">vlan / routing</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">wireguard</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">k3s / kubernetes</span><span class="text-warn">learning</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">ccna routing</span><span class="text-warn">learning</span></li>
+            </ul>
+          </article>
+
+          <!-- Game / Web -->
+          <article class="hud rounded-md border border-ink-700 bg-ink-800/60 p-5">
+            <span class="hud-c1"></span><span class="hud-c2"></span>
+            <header class="flex items-center gap-3">
+              <span class="grid h-8 w-8 place-items-center rounded bg-warn/10 text-warn border border-warn/30">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+              </span>
+              <h3 class="font-mono text-sm text-ink-50">game / web</h3>
+            </header>
+            <ul class="mt-4 space-y-2 font-mono text-[12px]">
+              <li class="flex justify-between"><span class="text-ink-200">luau / roblox</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">rojo</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">html / css</span><span class="text-run">solid</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">typescript</span><span class="text-warn">learning</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">svelte</span><span class="text-warn">learning</span></li>
+              <li class="flex justify-between"><span class="text-ink-200">godot</span><span class="text-ink-400">curious</span></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============== GITHUB ACTIVITY ============== -->
+    <section id="activity" aria-labelledby="activity-h" class="relative py-20 sm:py-28 border-t border-ink-700/60 bg-ink-950/40">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="reveal flex flex-wrap items-end justify-between gap-4 max-w-full">
+          <div>
+            <p class="font-mono text-xs text-data">// 04 — git log --since=last-year</p>
+            <h2 id="activity-h" class="mt-3 font-mono text-3xl sm:text-4xl text-ink-50">commits don&rsquo;t lie</h2>
+            <p class="mt-3 max-w-2xl text-ink-300">Squares get filled when something ships. Empty days are usually exam weeks (or, occasionally, sleep).</p>
+          </div>
+          <a href="#" class="font-mono text-sm text-ink-300 hover:text-data transition-colors duration-200 cursor-pointer">→ github.com/kacper-nowak</a>
+        </div>
+
+        <div class="reveal mt-10 hud rounded-md border border-ink-700 bg-ink-900/50 p-4 sm:p-6">
+          <span class="hud-c1"></span><span class="hud-c2"></span>
+
+          <div class="flex items-center justify-between font-mono text-[11px] text-ink-400 mb-3">
+            <span>612 contributions in the last year</span>
+            <span class="flex items-center gap-2">
+              less
+              <span class="inline-flex gap-0.5">
+                <span class="block h-2.5 w-2.5 rounded-sm bg-ink-700"></span>
+                <span class="block h-2.5 w-2.5 rounded-sm bg-run/25"></span>
+                <span class="block h-2.5 w-2.5 rounded-sm bg-run/55"></span>
+                <span class="block h-2.5 w-2.5 rounded-sm bg-run/80"></span>
+                <span class="block h-2.5 w-2.5 rounded-sm bg-run"></span>
+              </span>
+              more
+            </span>
+          </div>
+
+          <!-- 53 weeks × 7 days grid -->
+          <div id="gh-graph" class="grid gap-[3px]" style="grid-template-columns: repeat(53, minmax(0, 1fr));" aria-hidden="true"></div>
+
+          <!-- Stats row -->
+          <dl class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-px bg-ink-700/70 rounded-md overflow-hidden border border-ink-700">
+            <div class="bg-ink-900 p-4">
+              <dt class="font-mono text-[11px] uppercase tracking-wider text-ink-400">longest streak</dt>
+              <dd class="mt-1 font-mono text-2xl text-run">42 days</dd>
+            </div>
+            <div class="bg-ink-900 p-4">
+              <dt class="font-mono text-[11px] uppercase tracking-wider text-ink-400">repos shipped</dt>
+              <dd class="mt-1 font-mono text-2xl text-data">17</dd>
+            </div>
+            <div class="bg-ink-900 p-4">
+              <dt class="font-mono text-[11px] uppercase tracking-wider text-ink-400">PRs merged</dt>
+              <dd class="mt-1 font-mono text-2xl text-muse">38</dd>
+            </div>
+            <div class="bg-ink-900 p-4">
+              <dt class="font-mono text-[11px] uppercase tracking-wider text-ink-400">stars given</dt>
+              <dd class="mt-1 font-mono text-2xl text-warn">256</dd>
+            </div>
+          </dl>
+
+          <!-- Recent commits -->
+          <ul class="mt-6 divide-y divide-ink-700/70 font-mono text-[12px]">
+            <li class="py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span class="text-data">a3f81e2</span>
+              <span class="text-ink-200">feat(labctl):</span>
+              <span class="text-ink-300 flex-1 min-w-0 truncate">add `prune --dry-run` flag, 6 services dropped on idle</span>
+              <span class="text-ink-500">2h ago</span>
+            </li>
+            <li class="py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span class="text-data">7c4b9d1</span>
+              <span class="text-ink-200">fix(warsaw-rents):</span>
+              <span class="text-ink-300 flex-1 min-w-0 truncate">handle empty m² fields in scraper, +98 listings recovered</span>
+              <span class="text-ink-500">yesterday</span>
+            </li>
+            <li class="py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span class="text-data">e018f2c</span>
+              <span class="text-ink-200">docs(homelab):</span>
+              <span class="text-ink-300 flex-1 min-w-0 truncate">document VLAN30 IoT routing rules + diagram</span>
+              <span class="text-ink-500">3 days ago</span>
+            </li>
+            <li class="py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span class="text-data">b5a72d0</span>
+              <span class="text-ink-200">feat(tower-of-pierogi):</span>
+              <span class="text-ink-300 flex-1 min-w-0 truncate">procedural checkpoint placement v2, halves placement time</span>
+              <span class="text-ink-500">1 week ago</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============== CONTACT ============== -->
+    <section id="contact" aria-labelledby="contact-h" class="relative py-20 sm:py-28 border-t border-ink-700/60">
+      <div class="mx-auto max-w-7xl px-4 grid gap-10 lg:grid-cols-12 items-start">
+        <div class="reveal lg:col-span-5">
+          <p class="font-mono text-xs text-warn">// 05 — open a session</p>
+          <h2 id="contact-h" class="mt-3 font-mono text-3xl sm:text-4xl text-ink-50">let&rsquo;s build something <span class="text-data">weird</span> together.</h2>
+          <p class="mt-3 text-ink-300">Looking for: a summer internship, a junior data/devops role, or a homelab buddy who also thinks ZFS is a personality trait. Polish &amp; English, EU timezone.</p>
+
+          <ul class="mt-8 space-y-3 font-mono text-sm">
+            <li class="flex items-center gap-3 text-ink-200">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-data shrink-0" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <a href="mailto:hi@kacpernowak.dev" class="hover:text-data transition-colors duration-200 cursor-pointer">hi@kacpernowak.dev</a>
+            </li>
+            <li class="flex items-center gap-3 text-ink-200">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-run shrink-0" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              <a href="#" class="hover:text-run transition-colors duration-200 cursor-pointer">github.com/kacper-nowak</a>
+            </li>
+            <li class="flex items-center gap-3 text-ink-200">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muse shrink-0" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4"/><path d="M7 10v6M7 7v.01M11 16v-4M11 16c0-2 3-3 3-1v1M16 12v3a1 1 0 0 0 1 1h1"/></svg>
+              <a href="#" class="hover:text-muse transition-colors duration-200 cursor-pointer">linkedin.com/in/kacper-nowak</a>
+            </li>
+            <li class="flex items-center gap-3 text-ink-200">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-warn shrink-0" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+              <a href="#" class="hover:text-warn transition-colors duration-200 cursor-pointer">roblox.com/users/kacper</a>
+            </li>
+          </ul>
+
+          <div class="mt-8 hud rounded-md border border-ink-700 bg-ink-900/60 p-4">
+            <span class="hud-c1"></span><span class="hud-c2"></span>
+            <p class="font-mono text-[11px] text-ink-400 mb-2">// public key</p>
+            <code class="block font-mono text-[11px] text-ink-300 break-all">ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI...kacper@nas</code>
+          </div>
+        </div>
+
+        <form class="reveal hud lg:col-span-7 rounded-md border border-ink-700 bg-ink-900/60 p-6 sm:p-8 space-y-5 relative" novalidate>
+          <span class="hud-c1"></span><span class="hud-c2"></span>
+          <div class="flex items-center justify-between border-b border-ink-700 pb-3 -mt-2 -mx-2 px-2 font-mono text-[11px] text-ink-400">
+            <span>// new-message.sh</span>
+            <span class="flex items-center gap-2"><span class="led h-1.5 w-1.5 rounded-full bg-run"></span>encrypted</span>
+          </div>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="name" class="block font-mono text-xs text-ink-300">--name</label>
+              <input id="name" name="name" type="text" required autocomplete="name"
+                class="mt-2 w-full rounded border border-ink-600 bg-ink-950 px-3 py-2.5 font-mono text-sm text-ink-100 placeholder:text-ink-500 focus:border-data focus:outline-none transition-colors duration-200"
+                placeholder="Ada Lovelace" />
+            </div>
+            <div>
+              <label for="email" class="block font-mono text-xs text-ink-300">--email</label>
+              <input id="email" name="email" type="email" required autocomplete="email"
+                class="mt-2 w-full rounded border border-ink-600 bg-ink-950 px-3 py-2.5 font-mono text-sm text-ink-100 placeholder:text-ink-500 focus:border-data focus:outline-none transition-colors duration-200"
+                placeholder="you@company.io" />
+            </div>
+          </div>
+          <div>
+            <label for="topic" class="block font-mono text-xs text-ink-300">--topic</label>
+            <select id="topic" name="topic"
+              class="mt-2 w-full rounded border border-ink-600 bg-ink-950 px-3 py-2.5 font-mono text-sm text-ink-100 focus:border-data focus:outline-none transition-colors duration-200">
+              <option>internship</option>
+              <option>full-time junior role</option>
+              <option>open-source collab</option>
+              <option>roblox commission</option>
+              <option>just say hi</option>
+            </select>
+          </div>
+          <div>
+            <label for="message" class="block font-mono text-xs text-ink-300">--message</label>
+            <textarea id="message" name="message" rows="5" required
+              class="mt-2 w-full rounded border border-ink-600 bg-ink-950 px-3 py-2.5 font-mono text-sm text-ink-100 placeholder:text-ink-500 focus:border-data focus:outline-none transition-colors duration-200"
+              placeholder="cześć! we&rsquo;re looking for someone who…"></textarea>
+          </div>
+          <div class="flex items-center justify-between gap-3 flex-wrap pt-1">
+            <p class="font-mono text-[11px] text-ink-400">replies in &lt; 48h on weekdays · spam-free zone</p>
+            <button type="submit"
+              class="inline-flex items-center gap-2 rounded bg-run px-5 py-2.5 font-mono text-sm font-medium text-ink-950 hover:bg-run-dim transition-colors duration-200 cursor-pointer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              ./send
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============== FOOTER ============== -->
+  <footer class="border-t border-ink-700/60 py-8">
+    <div class="mx-auto max-w-7xl px-4 flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] text-ink-400">
+      <p>© 2026 kacper-nowak · built with html, tailwind &amp; an unhealthy amount of espresso ☕</p>
+      <p>last deploy: <span class="text-data">2026-05-29</span> · <span class="text-run">build #142</span></p>
+      <a href="#top" class="text-ink-300 hover:text-data transition-colors duration-200 cursor-pointer">^ scroll to top</a>
+    </div>
+  </footer>
+
+
+  <script>
+    // 1) Reveal-on-scroll (skipped if user prefers reduced motion)
+    (function () {
+      var prm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var els = document.querySelectorAll('.reveal');
+      if (prm || !('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
+      } else {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        els.forEach(function (el) { io.observe(el); });
+      }
+    })();
+
+    // 2) Status-bar clock (Warsaw / Europe)
+    (function () {
+      var el = document.getElementById('clock');
+      if (!el) return;
+      function tick() {
+        try {
+          var now = new Date();
+          var fmt = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Europe/Warsaw', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+          });
+          el.textContent = fmt.format(now);
+        } catch (_) { el.textContent = ''; }
+      }
+      tick(); setInterval(tick, 1000);
+    })();
+
+    // 3) Deterministic GitHub-style contribution heatmap (53 weeks × 7 days)
+    (function () {
+      var grid = document.getElementById('gh-graph');
+      if (!grid) return;
+      // Mulberry32 PRNG seeded with a fixed value -> stable layout across reloads.
+      var seed = 20260529; var rand = (function (s) { return function () {
+        s |= 0; s = (s + 0x6D2B79F5) | 0;
+        var t = Math.imul(s ^ (s >>> 15), 1 | s);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      }; })(seed);
+      var levels = ['bg-ink-700', 'bg-run/25', 'bg-run/55', 'bg-run/80', 'bg-run'];
+      var frag = document.createDocumentFragment();
+      // We render column-major (week by week, top -> bottom = sun..sat).
+      // To keep a 53-col grid where each column holds 7 cells, render in row-major
+      // by inverting: 7 rows × 53 cols. Tailwind grid auto-flow row works, so:
+      grid.style.gridTemplateRows = 'repeat(7, minmax(0, 1fr))';
+      grid.style.gridAutoFlow = 'column';
+      var weeks = 53, days = 7;
+      for (var w = 0; w < weeks; w++) {
+        // Slight wave: more activity in the middle, recent weeks higher.
+        var weekBias = 0.30 + 0.45 * Math.sin((w / weeks) * Math.PI) + (w / weeks) * 0.25;
+        for (var d = 0; d < days; d++) {
+          var r = rand();
+          // Lower probability on weekends to feel realistic.
+          var weekendDamp = (d === 0 || d === 6) ? 0.55 : 1;
+          var score = r * weekBias * weekendDamp;
+          var lvl = score < 0.25 ? 0 : score < 0.45 ? 1 : score < 0.65 ? 2 : score < 0.82 ? 3 : 4;
+          var cell = document.createElement('span');
+          cell.className = 'gh-cell ' + levels[lvl];
+          frag.appendChild(cell);
+        }
+      }
+      grid.appendChild(frag);
+    })();
+  </script>
+</body>
+</html>
